@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -44,7 +45,7 @@ namespace PetRemember.Controllers
         }
 
         // GET: Users/Create
-        public IActionResult Create()
+        public IActionResult Register()
         {
             return View();
         }
@@ -54,14 +55,41 @@ namespace PetRemember.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Surname,Mail,Password")] User user)
+        public async Task<IActionResult> Register([Bind("Id,Name,Surname,Mail,Salt,TextPassword")] User user)
         {
             if (ModelState.IsValid)
             {
+                user.Salt = Hmac.GenerateSalt();
+                user.Password = Hmac.ComputeHMAC_SHA256(Encoding.UTF8.GetBytes(user.TextPassword), user.Salt);
                 _context.Add(user);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            return View(user);
+        }
+
+        // GET: Users/Create
+        public IActionResult Login()
+        {
+            return View();
+        }
+
+        // POST: Users/Create
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Login(User user)
+        {
+            
+                var dbuser = await _context.User
+                .FirstOrDefaultAsync(u => u.Mail.Equals(user.Mail));
+                var hash = Hmac.ComputeHMAC_SHA256(Encoding.UTF8.GetBytes(user.TextPassword), dbuser.Salt);
+                if (dbuser != null && dbuser.Password.SequenceEqual(Hmac.ComputeHMAC_SHA256(Encoding.UTF8.GetBytes(user.TextPassword), dbuser.Salt)))
+                {
+                    return RedirectToAction(nameof(Details), new { id = dbuser.Id });
+                }                
+            
             return View(user);
         }
 
