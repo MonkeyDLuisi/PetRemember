@@ -35,7 +35,9 @@ namespace PetRemember.Controllers
             }
 
             var user = await _context.User
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(u => u.Id == id);
+            var pets = await _context.Pet
+                .Where(p => p.UserId == id).ToListAsync();
             if (user == null)
             {
                 return NotFound();
@@ -63,6 +65,7 @@ namespace PetRemember.Controllers
                 user.Password = Hmac.ComputeHMAC_SHA256(Encoding.UTF8.GetBytes(user.TextPassword), user.Salt);
                 _context.Add(user);
                 await _context.SaveChangesAsync();
+                _context.LoggedUser = user;
                 return RedirectToAction(nameof(Index));
             }
             return View(user);
@@ -87,6 +90,7 @@ namespace PetRemember.Controllers
                 var hash = Hmac.ComputeHMAC_SHA256(Encoding.UTF8.GetBytes(user.TextPassword), dbuser.Salt);
                 if (dbuser != null && dbuser.Password.SequenceEqual(Hmac.ComputeHMAC_SHA256(Encoding.UTF8.GetBytes(user.TextPassword), dbuser.Salt)))
                 {
+                    _context.LoggedUser = user;
                     return RedirectToAction(nameof(Details), new { id = dbuser.Id });
                 }                
             

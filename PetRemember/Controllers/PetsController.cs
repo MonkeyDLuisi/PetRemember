@@ -22,7 +22,8 @@ namespace PetRemember.Controllers
         // GET: Pets
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Pet.ToListAsync());
+            var petRememberContext = _context.Pet.Include(p => p.User);
+            return View(await petRememberContext.ToListAsync());
         }
 
         // GET: Pets/Details/5
@@ -34,6 +35,7 @@ namespace PetRemember.Controllers
             }
 
             var pet = await _context.Pet
+                .Include(p => p.User)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (pet == null)
             {
@@ -46,6 +48,7 @@ namespace PetRemember.Controllers
         // GET: Pets/Create
         public IActionResult Create()
         {
+            ViewData["UserId"] = new SelectList(_context.User, "Id", "Mail");
             return View();
         }
 
@@ -54,7 +57,7 @@ namespace PetRemember.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Age,Animal,Breed")] Pet pet)
+        public async Task<IActionResult> Create([Bind("Id,Age,Animal,Breed,UserId")] Pet pet)
         {
             if (ModelState.IsValid)
             {
@@ -62,6 +65,7 @@ namespace PetRemember.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["UserId"] = new SelectList(_context.User, "Id", "Mail", pet.UserId);
             return View(pet);
         }
 
@@ -78,6 +82,7 @@ namespace PetRemember.Controllers
             {
                 return NotFound();
             }
+            ViewData["UserId"] = new SelectList(_context.User, "Id", "Mail", pet.UserId);
             return View(pet);
         }
 
@@ -86,7 +91,7 @@ namespace PetRemember.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Age,Animal,Breed")] Pet pet)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Age,Animal,Breed,UserId")] Pet pet)
         {
             if (id != pet.Id)
             {
@@ -113,6 +118,7 @@ namespace PetRemember.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["UserId"] = new SelectList(_context.User, "Id", "Mail", pet.UserId);
             return View(pet);
         }
 
@@ -125,6 +131,7 @@ namespace PetRemember.Controllers
             }
 
             var pet = await _context.Pet
+                .Include(p => p.User)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (pet == null)
             {

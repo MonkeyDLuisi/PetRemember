@@ -15,7 +15,7 @@ namespace PetRemember.Data
         }
 
         public DbSet<User> User { get; set; }
-
         public DbSet<PetRemember.Models.Pet> Pet { get; set; }
+        public User LoggedUser { get; set; }
     }
 }
