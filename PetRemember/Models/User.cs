@@ -21,7 +21,8 @@ namespace PetRemember.Models
         public string Mail { get; set; }
         public byte[] Password { get; set; }
         public byte[] Salt { get; set; }
-        public List<Pet> Pets { get; set; }
+        [Display(Name = "Mascotas")]
+        public IEnumerable<Pet> Pets { get; set; }
 
 
         [NotMapped]

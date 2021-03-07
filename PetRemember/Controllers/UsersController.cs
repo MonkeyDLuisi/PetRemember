@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PetRemember.Data;
 using PetRemember.Models;
+using Microsoft.AspNetCore.Http;
 
 namespace PetRemember.Controllers
 {
@@ -27,23 +28,28 @@ namespace PetRemember.Controllers
         }
 
         // GET: Users/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(int? id = null)
         {
             if (id == null)
             {
-                return NotFound();
+                id = HttpContext.Session.GetInt32("userId");
+                if (id == null)
+                {
+                    return NotFound();
+                }
             }
 
             var user = await _context.User
-                .FirstOrDefaultAsync(u => u.Id == id);
-            var pets = await _context.Pet
-                .Where(p => p.UserId == id).ToListAsync();
+            .FirstOrDefaultAsync(u => u.Id == id);
             if (user == null)
             {
                 return NotFound();
             }
 
-            return View(user);
+            var pets = await _context.Pet
+                .Where(p => p.UserId == id).ToListAsync();
+
+            return View(new UserWithPetsViewModel { User = user, Pets = pets });
         }
 
         // GET: Users/Create
@@ -65,7 +71,7 @@ namespace PetRemember.Controllers
                 user.Password = Hmac.ComputeHMAC_SHA256(Encoding.UTF8.GetBytes(user.TextPassword), user.Salt);
                 _context.Add(user);
                 await _context.SaveChangesAsync();
-                _context.LoggedUser = user;
+                HttpContext.Session.SetInt32("userId", user.Id);
                 return RedirectToAction(nameof(Index));
             }
             return View(user);
@@ -90,8 +96,9 @@ namespace PetRemember.Controllers
                 var hash = Hmac.ComputeHMAC_SHA256(Encoding.UTF8.GetBytes(user.TextPassword), dbuser.Salt);
                 if (dbuser != null && dbuser.Password.SequenceEqual(Hmac.ComputeHMAC_SHA256(Encoding.UTF8.GetBytes(user.TextPassword), dbuser.Salt)))
                 {
-                    _context.LoggedUser = user;
-                    return RedirectToAction(nameof(Details), new { id = dbuser.Id });
+
+                HttpContext.Session.SetInt32("userId", user.Id);
+                return RedirectToAction(nameof(Details), new { id = dbuser.Id });
                 }                
             
             return View(user);
