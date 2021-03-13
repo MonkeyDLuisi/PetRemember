@@ -1,4 +1,4 @@
-﻿@model PetRemember.Models.UserWithPetsViewModel
+﻿@model PetRemember.Models.User
 
 @{
     ViewData["Title"] = "Details";
@@ -11,29 +11,29 @@
     <hr />
     <dl class="row">
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.User.Name)
+            @Html.DisplayNameFor(model => model.Name)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.User.Name)
+            @Html.DisplayFor(model => model.Name)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.User.Surname)
+            @Html.DisplayNameFor(model => model.Surname)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.User.Surname)
+            @Html.DisplayFor(model => model.Surname)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.User.Mail)
+            @Html.DisplayNameFor(model => model.Mail)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.User.Mail)
+            @Html.DisplayFor(model => model.Mail)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.User.Pets)
+            @Html.DisplayNameFor(model => model.Pets)
         </dt>
         <dd class="col-sm-10">
             <ul>
-                @foreach (var pet in Model.User.Pets)
+                @foreach (var pet in Model.Pets)
                 {
                 <li class="row">
                     <span>@pet.Name</span>
@@ -44,6 +44,6 @@
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model.User.Id">Edit</a> |
+    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
     <a asp-action="Index">Back to List</a>
 </div>

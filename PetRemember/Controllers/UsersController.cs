@@ -28,9 +28,9 @@ namespace PetRemember.Controllers
         }
 
         // GET: Users/Details/5
-        public async Task<IActionResult> Details(int? id = null)
+        public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
+            if (id == 0)
             {
                 id = HttpContext.Session.GetInt32("userId");
                 if (id == null)
@@ -49,7 +49,7 @@ namespace PetRemember.Controllers
             var pets = await _context.Pet
                 .Where(p => p.UserId == id).ToListAsync();
 
-            return View(new UserWithPetsViewModel { User = user, Pets = pets });
+            return View(user);
         }
 
         // GET: Users/Create
@@ -97,7 +97,7 @@ namespace PetRemember.Controllers
                 if (dbuser != null && dbuser.Password.SequenceEqual(Hmac.ComputeHMAC_SHA256(Encoding.UTF8.GetBytes(user.TextPassword), dbuser.Salt)))
                 {
 
-                HttpContext.Session.SetInt32("userId", user.Id);
+                HttpContext.Session.SetInt32("userId", dbuser.Id);
                 return RedirectToAction(nameof(Details), new { id = dbuser.Id });
                 }                
             
