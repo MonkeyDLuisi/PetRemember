@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Security.Cryptography;
 
-namespace PetRemember.Models
+namespace PetRemember.Application
 {
     public class Hmac
     {

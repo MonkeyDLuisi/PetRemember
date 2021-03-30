@@ -8,8 +8,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using PetRemember.Data;
 using Microsoft.EntityFrameworkCore;
+using PetRemember.Application;
+using PetRemember.Infrastructure.SQL;
+using PetRemember.Domain.Users;
+using PetRemember.Domain.Pets;
 
 namespace PetRemember
 {
@@ -27,6 +30,11 @@ namespace PetRemember
         {
             services.AddDistributedMemoryCache();
 
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IPetService, PetService>();
+            services.AddScoped<IPetRepository, PetRepository>();
+
             services.AddSession(options =>
             {
                 options.Cookie.HttpOnly = true;
@@ -34,9 +42,6 @@ namespace PetRemember
             });
 
             services.AddControllersWithViews();
-
-            services.AddDbContext<PetRememberContext>(options =>
-            options.UseSqlServer(Configuration.GetConnectionString("PetRememberContext")));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

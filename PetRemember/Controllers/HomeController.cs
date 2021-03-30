@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using PetRemember.Models;
-using PetRemember.Data;
+using PetRemember.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -13,23 +12,12 @@ namespace PetRemember.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly PetRememberContext _context;
-
-        public HomeController(PetRememberContext context)
-        {
-            _context = context;
-        }
         public IActionResult Index()
         {
-            if (HttpContext.Session.GetInt32("userId") != null)
-                return RedirectToAction(nameof(UsersController.Details), "Users", new { Id = HttpContext.Session.GetInt32("userId") });
+            if (HttpContext.Session.GetString("userId") != null)
+                return RedirectToAction(nameof(UsersController.Details), "Users", new { Id = Guid.Parse(HttpContext.Session.GetString("userId")) });
             else
                 return View();
-        }
-
-        public IActionResult Privacy()
-        {
-            return View();
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

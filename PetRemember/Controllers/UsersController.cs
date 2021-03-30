@@ -1,192 +1,133 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using PetRemember.Application;
+using PetRemember.Domain.Users;
+using PetRemember.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using PetRemember.Data;
-using PetRemember.Models;
-using Microsoft.AspNetCore.Http;
 
 namespace PetRemember.Controllers
 {
     public class UsersController : Controller
     {
-        private readonly PetRememberContext _context;
-
-        public UsersController(PetRememberContext context)
+        private readonly IUserService _userService;
+        private readonly IPetService _petService;
+        public UsersController(IUserService userService, IPetService petService)
         {
-            _context = context;
+            _userService = userService;
+            _petService = petService;
         }
-
-        // GET: Users
-        public async Task<IActionResult> Index()
+        public IActionResult Details(Guid? id)
         {
-            return View(await _context.User.ToListAsync());
-        }
-
-        // GET: Users/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == 0)
+            if (id == null)
             {
-                id = HttpContext.Session.GetInt32("userId");
-                if (id == null)
+                Guid auxId;
+                if (Guid.TryParse(HttpContext.Session.GetString("userId"), out auxId))
                 {
-                    return NotFound();
+                    id = auxId;
+                }
+                else
+                {
+                    return GoHome();
                 }
             }
 
-            var user = await _context.User
-            .FirstOrDefaultAsync(u => u.Id == id);
+            var user = _userService.Get((Guid)id);
             if (user == null)
             {
-                return NotFound();
+                return GoHome();
             }
 
-            var pets = await _context.Pet
-                .Where(p => p.UserId == id).ToListAsync();
+            var pets = _petService.GetByUser((Guid)id);
 
-            return View(user);
+            return View(new UserViewModel() { User = user, Pets = pets });
         }
-
-        // GET: Users/Create
         public IActionResult Register()
         {
             return View();
         }
-
-        // POST: Users/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Register([Bind("Id,Name,Surname,Mail,Salt,TextPassword")] User user)
+        public IActionResult Register(UserViewModel userViewModel)
         {
             if (ModelState.IsValid)
             {
-                user.Salt = Hmac.GenerateSalt();
-                user.Password = Hmac.ComputeHMAC_SHA256(Encoding.UTF8.GetBytes(user.TextPassword), user.Salt);
-                _context.Add(user);
-                await _context.SaveChangesAsync();
-                HttpContext.Session.SetInt32("userId", user.Id);
-                return RedirectToAction(nameof(Index));
+                var userId = _userService.Register(userViewModel.User, userViewModel.Password);
+                if (userId != null)
+                {
+                    HttpContext.Session.SetString("userId", userId.ToString());
+                    return RedirectToAction(nameof(Details), new { id = userId });
+                }
+                else
+                {
+                    return View(userViewModel);
+                }
             }
-            return View(user);
+            return View(userViewModel);
         }
+        public IActionResult Edit(Guid? id)
+        {
+            if (id == null)
+            {
+                Guid auxId;
+                if (Guid.TryParse(HttpContext.Session.GetString("userId"), out auxId))
+                {
+                    id = auxId;
+                }
+                else
+                {
+                    return GoHome();
+                }
+            }
 
-        // GET: Users/Create
+            var user = _userService.Get((Guid)id);
+            if (user == null)
+            {
+                return GoHome();
+            }
+            return View(new UserViewModel() { User = user });
+        }
         public IActionResult Login()
         {
             return View();
         }
-
-        // POST: Users/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(User user)
+        public IActionResult Login(UserViewModel userViewModel)
         {
-            
-                var dbuser = await _context.User
-                .FirstOrDefaultAsync(u => u.Mail.Equals(user.Mail));
-                var hash = Hmac.ComputeHMAC_SHA256(Encoding.UTF8.GetBytes(user.TextPassword), dbuser.Salt);
-                if (dbuser != null && dbuser.Password.SequenceEqual(Hmac.ComputeHMAC_SHA256(Encoding.UTF8.GetBytes(user.TextPassword), dbuser.Salt)))
-                {
-
-                HttpContext.Session.SetInt32("userId", dbuser.Id);
-                return RedirectToAction(nameof(Details), new { id = dbuser.Id });
-                }                
-            
-            return View(user);
-        }
-
-        // GET: Users/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
+            var userId = _userService.Login(userViewModel.User.Mail, userViewModel.Password);
+            if (userId != null)
             {
-                return NotFound();
+                HttpContext.Session.SetString("userId", userId.ToString());
+                return RedirectToAction(nameof(Details), new { id = userId });
             }
-
-            var user = await _context.User.FindAsync(id);
-            if (user == null)
+            else
             {
-                return NotFound();
+                return View(userViewModel);
             }
-            return View(user);
         }
-
-        // POST: Users/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Surname,Mail,Password")] User user)
+        public IActionResult Edit(Guid id, UserViewModel userViewModel)
         {
-            if (id != user.Id)
+            if (id != userViewModel.User.Id)
             {
-                return NotFound();
+                return GoHome();
             }
 
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(user);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!UserExists(user.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                _userService.Update(userViewModel.User);
                 return RedirectToAction(nameof(Index));
             }
-            return View(user);
+            return View(userViewModel.User);
         }
-
-        // GET: Users/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        private IActionResult GoHome()
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var user = await _context.User
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            return View(user);
-        }
-
-        // POST: Users/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var user = await _context.User.FindAsync(id);
-            _context.User.Remove(user);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-
-        private bool UserExists(int id)
-        {
-            return _context.User.Any(e => e.Id == id);
+            return RedirectToAction(nameof(HomeController.Index), "Home");
         }
     }
 }

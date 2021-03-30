@@ -1,6 +1,6 @@
-using System;
+﻿using System;
 
-namespace PetRemember.Models
+namespace PetRemember.ViewModels
 {
     public class ErrorViewModel
     {
