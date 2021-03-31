@@ -1,4 +1,5 @@
 ﻿using PetRemember.Domain.Pets;
+using PetRemember.Domain.Products;
 using PetRemember.Domain.Users;
 using System;
 using System.Collections.Generic;
@@ -11,6 +12,7 @@ namespace PetRemember.ViewModels
     {
         public User User { get; set; }
         public IEnumerable<Pet> Pets { get; set; }
+        public IEnumerable<Product> Products { get; set; }
         public string Password { get; set; }
     }
 }

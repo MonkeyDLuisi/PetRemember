@@ -13,6 +13,8 @@ using PetRemember.Application;
 using PetRemember.Infrastructure.SQL;
 using PetRemember.Domain.Users;
 using PetRemember.Domain.Pets;
+using PetRemember.Application.Products;
+using PetRemember.Domain.Products;
 
 namespace PetRemember
 {
@@ -34,6 +36,8 @@ namespace PetRemember
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IPetService, PetService>();
             services.AddScoped<IPetRepository, PetRepository>();
+            services.AddScoped<IProductService, ProductService>();
+            services.AddScoped<IProductRepository, ProductRepository>();
 
             services.AddSession(options =>
             {

@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PetRemember.Application;
+using PetRemember.Application.Products;
+using PetRemember.Domain.Pets;
+using PetRemember.Domain.Products;
 using PetRemember.Domain.Users;
 using PetRemember.ViewModels;
 using System;
@@ -15,10 +18,12 @@ namespace PetRemember.Controllers
     {
         private readonly IUserService _userService;
         private readonly IPetService _petService;
-        public UsersController(IUserService userService, IPetService petService)
+        private readonly IProductService _productService;
+        public UsersController(IUserService userService, IPetService petService, IProductService productService)
         {
             _userService = userService;
             _petService = petService;
+            _productService = productService;
         }
         public IActionResult Details(Guid? id)
         {
@@ -42,8 +47,15 @@ namespace PetRemember.Controllers
             }
 
             var pets = _petService.GetByUser((Guid)id);
+            var products = new List<Product>();
+            var allProducts = _productService.GetAll();
 
-            return View(new UserViewModel() { User = user, Pets = pets });
+            foreach (Pet pet in pets)
+            {
+                products.AddRange(allProducts.Where(p => (p.MaxWeight == 0 || p.MaxWeight > pet.Weight) && (p.MinWeight == 0 || p.MinWeight <= pet.Weight)));
+            }
+
+            return View(new UserViewModel() { User = user, Pets = pets, Products = products });
         }
         public IActionResult Register()
         {

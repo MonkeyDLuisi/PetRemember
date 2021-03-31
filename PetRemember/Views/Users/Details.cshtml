@@ -23,7 +23,7 @@
             @Html.DisplayFor(model => model.User.Mail)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.User.Pets)
+            @Html.DisplayNameFor(model => model.Pets)
         </dt>
         <dd class="col-sm-10">
             <ul>
@@ -31,6 +31,19 @@
                 {
                     <li class="row">
                         <span>@pet.Name</span>
+                    </li>
+                }
+            </ul>
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Products)
+        </dt>
+        <dd class="col-sm-10">
+            <ul>
+                @foreach (var product in Model.Products)
+                {
+                    <li class="row">
+                        <span>@product.Name</span>
                     </li>
                 }
             </ul>
