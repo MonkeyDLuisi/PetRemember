@@ -1,8 +1,36 @@
-﻿@{
+﻿@model PetRemember.ViewModels.UserViewModel
+@{
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="texto_bienvenida">
+    <h1>¡BIENVENID&commat;S!</h1>
+    <p>
+        BIENVENID&commat; A <span class="petremember">PetRemember</span>, LA APP QUE PERMITE CONTROLAR
+        DE MANERA  CENTRALIZADA Y EXCLUSIVA TODOS LOS RECORDATORIOS
+        NECESARIOS PARA CUIDAR DE TUS MASCOTAS
+    </p>
+</div>
+<div class="login">
+    <ul class="loginregistro">
+        <li class="activo">Iniciar sesión</li>
+        <li>Regstrarse</li>
+    </ul>
+    <form asp-controller="Users" asp-action="Login">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="form-group">
+            <label class="mail"></label>
+            <input asp-for="User.Mail" placeholder="Email" class="form-control" />
+            <span asp-validation-for="User.Mail" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label class="pass"></label>
+            <input type="password" asp-for="Password" placeholder="Password" class="form-control" />
+            <span asp-validation-for="Password" class="text-danger"></span>
+        </div>
+        <p>No recuerdas la contraseña? <a>Recuperar contraseña</a></p>
+        <div class="form-group">
+            <input type="submit" value="Iniciar sesión" class="btn btn-primary" />
+        </div>
+    </form>
 </div>
