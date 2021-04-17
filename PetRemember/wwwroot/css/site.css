@@ -9,6 +9,8 @@ body {
     height: 100vh;
     max-height: calc(100vw * 763 / 1440);
     background-color: #F9B944;
+    position:relative;
+    overflow:hidden;
 }
 
 .navbar {
