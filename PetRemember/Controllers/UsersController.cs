@@ -80,6 +80,25 @@ namespace PetRemember.Controllers
             }
             return View(userViewModel);
         }
+        public IActionResult Login()
+        {
+            return View();
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Login(UserViewModel userViewModel)
+        {
+            var userId = _userService.Login(userViewModel.User.Mail, userViewModel.Password);
+            if (userId != null)
+            {
+                HttpContext.Session.SetString("userId", userId.ToString());
+                return RedirectToAction(nameof(Details), new { id = userId });
+            }
+            else
+            {
+                return View(userViewModel);
+            }
+        }
         public IActionResult Edit(Guid? id)
         {
             if (id == null)
@@ -101,25 +120,6 @@ namespace PetRemember.Controllers
                 return GoHome();
             }
             return View(new UserViewModel() { User = user });
-        }
-        public IActionResult Login()
-        {
-            return View();
-        }
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Login(UserViewModel userViewModel)
-        {
-            var userId = _userService.Login(userViewModel.User.Mail, userViewModel.Password);
-            if (userId != null)
-            {
-                HttpContext.Session.SetString("userId", userId.ToString());
-                return RedirectToAction(nameof(Details), new { id = userId });
-            }
-            else
-            {
-                return View(userViewModel);
-            }
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
