@@ -29,7 +29,8 @@ namespace PetRemember.Infrastructure.SQL
 
         public User Get(Guid id)
         {
-            return new User() { FullName = "Mockeado", Id = id };
+            var user = _sqlConnection.QueryFirst<User>("select * from Users where Id = @id", new { id = id });
+            return user;
         }
 
         public void Remove(Guid id)
