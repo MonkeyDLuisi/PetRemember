@@ -216,11 +216,11 @@ span.petremember {
     width:10%;
 }
 
-.login label.mail {
+.login #loginform label.mail {
     padding-top: 10px;
 }
 
-.login label.pass {
+.login #loginform label.pass {
     padding-top: 5px;
 }
 
@@ -259,3 +259,19 @@ footer .siguenos {
     margin-top: calc(100vh * 41 / 762);
     margin-left: calc(100vw * 85 / 1440);
 }
+
+.login #registerform {
+    display: none;
+}
+
+.login #registerform label.name {
+    padding-top: 10px;
+}
+
+    .login #registerform label.mail {
+        padding-top: 5px;
+    }
+
+    .login #registerform label.pass {
+        padding-top: 5px;
+    }
