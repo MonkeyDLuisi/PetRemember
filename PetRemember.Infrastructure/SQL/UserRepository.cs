@@ -13,7 +13,7 @@ namespace PetRemember.Infrastructure.SQL
         private readonly SqlConnection _sqlConnection;
         public UserRepository()
         {
-            _sqlConnection = new SqlConnection("Server=(localdb)\\mssqllocaldb;Database=PetRememberContext-1;Trusted_Connection=True;MultipleActiveResultSets=true");
+            _sqlConnection = new SqlConnection("Server=(localdb)\\mssqllocaldb;Database=PetRemember;Trusted_Connection=True;MultipleActiveResultSets=true");
         }
         public Guid Add(User user)
         {

@@ -3,5 +3,16 @@
 
 // Write your JavaScript code.
 $(document).ready(function () {
-    
+    $("#logintab").click(function() {
+        $("#registerform").hide();
+        $("#loginform").show();
+        $("#registertab").removeClass("activo");
+        $(this).addClass("activo");
+    });
+    $("#registertab").click(function() {
+        $("#loginform").hide();
+        $("#registerform").show();
+        $("#logintab").removeClass("activo");
+        $(this).addClass("activo");
+    });
 });

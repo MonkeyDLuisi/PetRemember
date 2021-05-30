@@ -232,6 +232,10 @@ span.petremember {
     content: url(/images/PetRemember-Lock.svg);
 }
 
+.login label.name::before {
+    content: url(/images/PetRemember-User.svg);
+}
+
 .login .btn {
     width: 100%;
     background: #D58D02;
@@ -240,7 +244,6 @@ span.petremember {
     height: calc(100vw * 51 / 1440);
     font-weight: bold;
     font-size: calc(100vw * 20 / 1440);
-    margin-top: calc(100vw * 40 / 1440);
 }
 
 .login p {
@@ -265,13 +268,59 @@ footer .siguenos {
 }
 
 .login #registerform label.name {
-    padding-top: 10px;
+    padding-top: 8px;
 }
 
-    .login #registerform label.mail {
-        padding-top: 5px;
+.login #registerform label.mail {
+    padding-top: 5px;
+}
+
+.login #registerform label.pass {
+    padding-top: 5px;
+}
+
+    .login #registerform .btn {
+        margin-top: calc(100vh * 20 / 762);
     }
 
-    .login #registerform label.pass {
-        padding-top: 5px;
-    }
+.login #loginform .btn {
+    margin-top: calc(100vh * 40 / 762);
+}
+
+.calendar {
+    position: absolute;
+    width: calc(100vw * 1212 / 1440);
+    height: calc(100vh * 590 / 762);
+    background: white;
+    top: 50vh;
+    left: calc(100vw * ((1440 - 1212) / 2) / 1440);
+    border: 1px solid #F9B944;
+    box-sizing: border-box;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.35);
+    border-radius: calc(100vh * 45 / 762);
+}
+
+.calendar__month {
+    color: #D58D02;
+    font-weight: bold;
+    font-size: 35px;
+    position: absolute;
+    top: calc(100vh * 31 / 762);
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.calendar td {
+    color: #C4C4C4;
+    font-weight: 300;
+    font-size: 35px;
+    width:10%;
+    text-align: center;
+    line-height: 250%;
+}
+
+.calendar table {
+    bottom: 5%;
+    position: absolute;
+    width:100%;
+}

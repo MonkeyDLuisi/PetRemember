@@ -12,6 +12,26 @@
     </p>
 </div>
 
+<div class="calendar">
+    <span class="calendar__month">< &emsp;&emsp;&emsp;&emsp; @Model.Month &emsp;&emsp;&emsp;&emsp; ></span>
+    <table>
+        @for (int row = 0; row <= Model.Weeks.GetUpperBound(0); row++)
+        {
+        <tr>
+            @for (int column = 0; column <= Model.Weeks.GetUpperBound(1); column++)
+            {
+            <td>
+                @if (Model.Weeks[row, column] != 0)
+                {
+                    @Model.Weeks[row, column]
+                }
+            </td>
+            }
+        </tr>
+        }
+    </table>
+</div>
+
 <div>
     <h4>User</h4>
     <hr />
@@ -33,10 +53,10 @@
         </dt>
         <dd class="col-sm-10">
             <ul>
-                @foreach (var pet in Model.Pets)
+                @foreach (var Pet in Model.Pets)
                 {
                     <li class="row">
-                        <span>@pet.Name</span>
+                        <span>@Pet.Name</span>
                     </li>
                 }
             </ul>
@@ -46,10 +66,10 @@
         </dt>
         <dd class="col-sm-10">
             <ul>
-                @foreach (var product in Model.Products)
+                @foreach (var Product in Model.Products)
                 {
                     <li class="row">
-                        <span>@product.Name</span>
+                        <span>@Product.Name</span>
                     </li>
                 }
             </ul>
